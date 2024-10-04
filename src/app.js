@@ -46,7 +46,10 @@ function wrapText(text, width) {
 function printTitle(title) {
     const width = 75; // Set the width for the title box
     const border = '═'.repeat(width - 2); // Create the border line
-    const titleLine = chalk.blue(`║ ${title.padStart((width - 2 + title.length) / 2).padEnd(width - 2)} ║`); // Center the title with borders
+    const titleLength = title.length; // Get the length of the title
+    const padding = Math.max(0, (width - 2 - titleLength) / 2); // Calculate padding for centering
+
+    const titleLine = chalk.blue(`║${' '.repeat(padding)}${title}${' '.repeat(padding + (width - 2 - titleLength) % 2)}║`); // Center the title with borders
 
     console.log(chalk.blue(`╔${border}╗`)); // Top border
     console.log(titleLine); // Title line
@@ -63,7 +66,8 @@ function displayThemes() {
         console.log(chalk.red(`${index + 1}. ${chalk.blue(theme)}`)); // Print themes in red with blue titles
     });
     console.log(); // Empty line
-    rl.question(chalk.blueBright("Please select a theme by entering the corresponding number: "), (answer) => {
+    // Set the prompt text to white
+    rl.question(chalk.white("Please select a theme by entering the corresponding number: "), (answer) => {
         const selectedThemeIndex = parseInt(answer) - 1;
         if (selectedThemeIndex >= 0 && selectedThemeIndex < themes.length) {
             const selectedTheme = themes[selectedThemeIndex];
