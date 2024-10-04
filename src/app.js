@@ -12,6 +12,7 @@
 
 const fs = require('fs');
 const readline = require('readline');
+const chalk = require('chalk'); // Import chalk for colored text
 
 // Load stories from JSON file
 const storiesData = JSON.parse(fs.readFileSync('./assets/stories.json', 'utf-8'));
@@ -41,15 +42,28 @@ function wrapText(text, width) {
     return wrappedText;
 }
 
+// Function to print the game title in a box
+function printTitle(title) {
+    const width = 75; // Set the width for the title box
+    const border = '═'.repeat(width - 2); // Create the border line
+    const titleLine = chalk.blue(`║ ${title} ║`); // Center the title with borders
+
+    console.log(chalk.blue(`╔${border}╗`)); // Top border
+    console.log(titleLine); // Title line
+    console.log(chalk.blue(`╚${border}╝`)); // Bottom border
+    console.log(); // Empty line
+}
+
 // Function to display themes and prompt user for selection
 function displayThemes() {
-    console.log(wrapText("Welcome to the Mad Libs Game!", 75));
-    console.log(wrapText("Available Themes:", 75));
+    printTitle("Mad Libs Terminal Game"); // Print the game title
+    console.log(chalk.white(wrapText("Available Themes:", 75))); // Available themes message
     const themes = Object.keys(storiesData.themes);
     themes.forEach((theme, index) => {
-        console.log(`${index + 1}. ${theme}`);
+        console.log(chalk.red(`${index + 1}. ${chalk.blue(theme)}`)); // Print themes in red with blue titles
     });
-    rl.question("Please select a theme by entering the corresponding number: ", (answer) => {
+    console.log(); // Empty line
+    rl.question(chalk.lightBlue("Please select a theme by entering the corresponding number: "), (answer) => {
         const selectedThemeIndex = parseInt(answer) - 1;
         if (selectedThemeIndex >= 0 && selectedThemeIndex < themes.length) {
             const selectedTheme = themes[selectedThemeIndex];
@@ -90,8 +104,12 @@ function promptForInputs(story) {
 
 // Function to display the completed story
 function displayCompletedStory(story, inputs) {
-    let completedStory = story.story.join(' ').replace(/___/g, () => inputs.shift());
-    console.log("\nHere is your completed story:\n");
+    let completedStory = story.story.join(' ').replace(/___/g, () => chalk.green(inputs.shift())); // Replace answers with green color
+    console.log(); // Empty line
+    console.log(chalk.yellow("Here is your completed story:")); // Completed story header
+    console.log(); // Empty line
+    printTitle(story.title); // Print the story title in a box
+    console.log(); // Empty line
     console.log(wrapText(completedStory, 75)); // Wrap the completed story text to 75 characters
     rl.close();
 }
