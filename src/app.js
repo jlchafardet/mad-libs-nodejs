@@ -15,7 +15,13 @@ import readline from 'readline';
 import chalk from 'chalk'; // Import chalk for colored text
 
 // Load stories from JSON file
-const storiesData = JSON.parse(fs.readFileSync('./assets/stories.json', 'utf-8')); // Read and parse the JSON file containing stories
+let storiesData;
+try {
+    storiesData = JSON.parse(fs.readFileSync('./assets/stories.json', 'utf-8')); // Read and parse the JSON file containing stories
+} catch (error) {
+    console.error(chalk.red("Error loading stories data. Please check the JSON file format.")); // Error message for JSON loading
+    process.exit(1); // Exit the application if stories cannot be loaded
+}
 
 // Create readline interface for user input
 const rl = readline.createInterface({
@@ -75,12 +81,12 @@ function displayThemes() {
     // Set the prompt text to white and ask for user input
     rl.question(chalk.white("Please select a theme by entering the corresponding number: "), (answer) => {
         const selectedThemeIndex = parseInt(answer) - 1; // Convert user input to an index
-        if (selectedThemeIndex >= 0 && selectedThemeIndex < themes.length) {
+        if (isNaN(selectedThemeIndex) || selectedThemeIndex < 0 || selectedThemeIndex >= themes.length) {
+            console.log(chalk.red("Invalid selection. Please enter a valid number corresponding to a theme.")); // Error message for invalid input
+            displayThemes(); // Re-display themes for selection
+        } else {
             const selectedTheme = themes[selectedThemeIndex]; // Get the selected theme
             selectRandomStory(selectedTheme); // Proceed to select a random story
-        } else {
-            console.log("Invalid selection. Please try again."); // Handle invalid input
-            displayThemes(); // Re-display themes for selection
         }
     });
 }
@@ -104,8 +110,13 @@ function promptForInputs(story) {
     function askForInput(index) {
         if (index < placeholders.length) {
             rl.question(`${placeholders[index].prompt}: `, (input) => {
-                inputs.push(input); // Store the user input
-                askForInput(index + 1); // Ask for the next input
+                if (input.trim() === "") {
+                    console.log(chalk.red("Input cannot be empty. Please provide a valid input.")); // Error message for empty input
+                    askForInput(index); // Ask for the same input again
+                } else {
+                    inputs.push(input); // Store the user input
+                    askForInput(index + 1); // Ask for the next input
+                }
             });
         } else {
             displayCompletedStory(story, inputs); // Once all inputs are collected, display the completed story
