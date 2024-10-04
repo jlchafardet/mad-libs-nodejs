@@ -6,8 +6,8 @@
 //
 // File Name: app.js
 // Description: Mad Libs terminal game
-// Created: ${new Date().toISOString()}
-// Last Modified: ${new Date().toISOString()}
+// Created: Thursday, 19 October 2023
+// Last Modified: Thursday, 19 October 2023
 // ============================================================================
 
 const fs = require('fs');
@@ -22,10 +22,29 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
+// Function to wrap text to a specified width
+function wrapText(text, width) {
+    const words = text.split(' ');
+    let wrappedText = '';
+    let currentLine = '';
+
+    words.forEach(word => {
+        if ((currentLine + word).length > width) {
+            wrappedText += currentLine.trim() + '\n'; // Add the current line to wrapped text
+            currentLine = word + ' '; // Start a new line with the current word
+        } else {
+            currentLine += word + ' '; // Add the word to the current line
+        }
+    });
+
+    wrappedText += currentLine.trim(); // Add any remaining text
+    return wrappedText;
+}
+
 // Function to display themes and prompt user for selection
 function displayThemes() {
-    console.log("Welcome to the Mad Libs Game!");
-    console.log("Available Themes:");
+    console.log(wrapText("Welcome to the Mad Libs Game!", 75));
+    console.log(wrapText("Available Themes:", 75));
     const themes = Object.keys(storiesData.themes);
     themes.forEach((theme, index) => {
         console.log(`${index + 1}. ${theme}`);
@@ -73,7 +92,7 @@ function promptForInputs(story) {
 function displayCompletedStory(story, inputs) {
     let completedStory = story.story.join(' ').replace(/___/g, () => inputs.shift());
     console.log("\nHere is your completed story:\n");
-    console.log(completedStory);
+    console.log(wrapText(completedStory, 75)); // Wrap the completed story text to 75 characters
     rl.close();
 }
 
