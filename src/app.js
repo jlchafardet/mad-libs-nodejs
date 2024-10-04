@@ -10,9 +10,9 @@
 // Last Modified: Thursday, 19 October 2023
 // ============================================================================
 
-const fs = require('fs');
-const readline = require('readline');
-const chalk = require('chalk'); // Import chalk for colored text
+import fs from 'fs';
+import readline from 'readline';
+import chalk from 'chalk'; // Import chalk for colored text
 
 // Load stories from JSON file
 const storiesData = JSON.parse(fs.readFileSync('./assets/stories.json', 'utf-8'));
@@ -46,7 +46,7 @@ function wrapText(text, width) {
 function printTitle(title) {
     const width = 75; // Set the width for the title box
     const border = '═'.repeat(width - 2); // Create the border line
-    const titleLine = chalk.blue(`║ ${title} ║`); // Center the title with borders
+    const titleLine = chalk.blue(`║ ${title.padStart((width - 2 + title.length) / 2).padEnd(width - 2)} ║`); // Center the title with borders
 
     console.log(chalk.blue(`╔${border}╗`)); // Top border
     console.log(titleLine); // Title line
@@ -63,7 +63,7 @@ function displayThemes() {
         console.log(chalk.red(`${index + 1}. ${chalk.blue(theme)}`)); // Print themes in red with blue titles
     });
     console.log(); // Empty line
-    rl.question(chalk.lightBlue("Please select a theme by entering the corresponding number: "), (answer) => {
+    rl.question(chalk.blueBright("Please select a theme by entering the corresponding number: "), (answer) => {
         const selectedThemeIndex = parseInt(answer) - 1;
         if (selectedThemeIndex >= 0 && selectedThemeIndex < themes.length) {
             const selectedTheme = themes[selectedThemeIndex];
